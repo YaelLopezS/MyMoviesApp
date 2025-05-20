@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { useGuestSession } from "@/providers/GuestSessionContext";
 import { getFavoriteMovies } from "@/services/accounts/getFavoriteMovies";
