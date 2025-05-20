@@ -16,15 +16,16 @@ export default function MyFavoritesPage() {
   const page = parseInt(searchParams.get("page") || "1");
 
   useEffect(() => {
-    const fetchFavorites = async () => {
-      if (!guestSessionId) return;
-      setLoading(true);
-      const data = await getFavoriteMovies(guestSessionId, page);
-      setMovies(data || []);
-      setLoading(false);
-    };
+    if (!guestSessionId) return;
 
-    fetchFavorites();
+    setLoading(true);
+    getFavoriteMovies(guestSessionId, page)
+      .then((data) => {
+        setMovies(data || []);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [guestSessionId, page]);
 
   const goToPage = (newPage: number) => {
