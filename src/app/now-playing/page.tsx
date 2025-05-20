@@ -1,9 +1,52 @@
-import React from 'react'
+"use client";
 
-const NowPlayingPage = () => {
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { getNowPlayingMovies } from "@/services/movies/getNowPlayingMovies";
+import MovieList from "@/components/MovieList/MovieList";
+
+export default function NowPlayingPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = parseInt(searchParams.get("page") || "1");
+
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      setLoading(true);
+      const data = await getNowPlayingMovies(page);
+      setMovies(data || []);
+      setLoading(false);
+    };
+    fetchMovies();
+  }, [page]);
+
+  const goToPage = (newPage: number) => {
+    router.push(`/now-playing?page=${newPage}`);
+  };
+
   return (
-    <div>NowPlayingPage</div>
-  )
-}
+    <div>
+      <h3 className="text-3xl font-bold mb-6">Now Playing</h3>
+      {loading ? <p>Loading...</p> : <MovieList movies={movies} />}
 
-export default NowPlayingPage
+      <div className="flex justify-center mt-6 gap-4">
+        <button
+          disabled={page === 1}
+          onClick={() => goToPage(page - 1)}
+          className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => goToPage(page + 1)}
+          className="bg-gray-200 px-4 py-2 rounded"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
